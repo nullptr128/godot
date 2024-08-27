@@ -38,6 +38,7 @@
 
 #ifdef TOOLS_ENABLED
 #include "main/main.h"
+#include "editor/plugins/locale_editor_plugin.h"
 #endif
 
 Dictionary Translation::_get_messages() const {
@@ -89,6 +90,13 @@ void Translation::set_locale(const String &p_locale) {
 		// Avoid calling non-thread-safe functions here.
 		callable_mp(this, &Translation::_notify_translation_changed_if_applies).call_deferred();
 	}
+}
+
+void Translation::set_bundle_name(const String &p_bundle_name) {
+	bundle_name = p_bundle_name;
+	#ifdef TOOLS_ENABLED
+		LocaleEditorPlugin::get_singleton()->notify_translation_changed();
+	#endif
 }
 
 void Translation::_notify_translation_changed_if_applies() {
@@ -156,6 +164,8 @@ int Translation::get_message_count() const {
 void Translation::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_locale", "locale"), &Translation::set_locale);
 	ClassDB::bind_method(D_METHOD("get_locale"), &Translation::get_locale);
+	ClassDB::bind_method(D_METHOD("set_bundle_name", "bundle_name"), &Translation::set_bundle_name);
+	ClassDB::bind_method(D_METHOD("get_bundle_name"), &Translation::get_bundle_name);
 	ClassDB::bind_method(D_METHOD("add_message", "src_message", "xlated_message", "context"), &Translation::add_message, DEFVAL(StringName()));
 	ClassDB::bind_method(D_METHOD("add_plural_message", "src_message", "xlated_messages", "context"), &Translation::add_plural_message, DEFVAL(StringName()));
 	ClassDB::bind_method(D_METHOD("get_message", "src_message", "context"), &Translation::get_message, DEFVAL(StringName()));
@@ -172,6 +182,7 @@ void Translation::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "messages", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "_set_messages", "_get_messages");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "locale"), "set_locale", "get_locale");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "bundle_name"), "set_bundle_name", "get_bundle_name");
 }
 
 ///////////////////////////////////////////////

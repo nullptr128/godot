@@ -40,6 +40,7 @@ class Translation : public Resource {
 	RES_BASE_EXTENSION("translation");
 
 	String locale = "en";
+	String bundle_name = "default";
 	HashMap<StringName, StringName> translation_map;
 
 	virtual Vector<String> _get_message_list() const;
@@ -61,6 +62,9 @@ protected:
 public:
 	void set_locale(const String &p_locale);
 	_FORCE_INLINE_ String get_locale() const { return locale; }
+
+	void set_bundle_name(const String &p_bundle_name);
+	_FORCE_INLINE_ String get_bundle_name() const { return bundle_name; }
 
 	virtual void add_message(const StringName &p_src_text, const StringName &p_xlated_text, const StringName &p_context = "");
 	virtual void add_plural_message(const StringName &p_src_text, const Vector<String> &p_plural_xlated_texts, const StringName &p_context = "");
@@ -170,6 +174,8 @@ public:
 	bool is_pseudolocalization_enabled() const;
 	void set_pseudolocalization_enabled(bool p_enabled);
 	void reload_pseudolocalization();
+
+	_FORCE_INLINE_ HashSet<Ref<Translation>> get_translations() const { return translations; };
 
 	String standardize_locale(const String &p_locale) const;
 
